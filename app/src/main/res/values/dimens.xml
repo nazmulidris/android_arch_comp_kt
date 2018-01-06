@@ -16,5 +16,5 @@
   -->
 
 <resources>
-    <dimen name="labelTextSize">25sp</dimen>
+    <dimen name="labelTextSize">18sp</dimen>
 </resources>

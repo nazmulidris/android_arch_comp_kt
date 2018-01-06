@@ -28,8 +28,11 @@ import android.support.v4.provider.FontsContractCompat
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.TextView
-import org.jetbrains.anko.*
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.applyRecursively
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.error
+import org.jetbrains.anko.info
 
 class DebugObserver(val ctx: Context, val root: View) : LifecycleObserver, AnkoLogger {
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -38,10 +41,10 @@ class DebugObserver(val ctx: Context, val root: View) : LifecycleObserver, AnkoL
         snackbar(root, "MainActivity created")
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun showOnStop() {
-        ctx.toast("MainActivity stopped")
-    }
+//    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+//    fun showOnStop() {
+//        ctx.toast("MainActivity stopped")
+//    }
 }
 
 class FontObserver(val mContext: Context, val mToolbar: Toolbar) : LifecycleObserver, AnkoLogger {

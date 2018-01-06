@@ -91,11 +91,17 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                             okButton {
                                 mStateViewModel.mData.clicked = true
                                 snackbar(rootView, "👍")
+                                info("👍 was selected")
                             }
                             noButton {
                                 mStateViewModel.mData.clicked = true
                                 snackbar(rootView, "👎")
-                                wtf("👎 was selected")
+                                info("👎 was selected")
+                            }
+                            onCancelled {
+                                mStateViewModel.mData.clicked = true
+                                snackbar(rootView, "👊")
+                                info("👊 dialog was dismissed")
                             }
                         }
                 ).show()

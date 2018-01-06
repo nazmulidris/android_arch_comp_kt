@@ -20,9 +20,9 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.os.Looper
-import android.widget.Toast
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
+import org.jetbrains.anko.toast
 import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.Executors
@@ -48,11 +48,9 @@ class StateViewModel(context: Application) : AndroidViewModel(context), AnkoLogg
     private lateinit var _data: Data
     var mData: Data
         get() {
-            if (::_data.isInitialized) {
-                Toast.makeText(getApplication(), "Re-using ViewModel", Toast.LENGTH_SHORT).show()
-            } else {
+            if (!::_data.isInitialized) {
+                getApplication<Application>().toast("Creating new ViewModel")
                 _data = Data(Random().nextInt(1000).toString(), Date())
-                Toast.makeText(getApplication(), "This is a new ViewModel", Toast.LENGTH_SHORT).show()
             }
             return _data
         }
@@ -90,10 +88,13 @@ data class Data(val id: String, val time: Date) :
         }
 
     override fun toString(): String {
-        val format = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.US)
-        return "id: $id, " +
-                "clickedOk/Cancel: ${if (clicked) "✔︎" else "✖︎"}, " +
-                "created: ${format.format(time)}"
+        return with(StringBuffer()) {
+            val dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.US)
+            append("Data: ")
+            append("created: ${dateFormat.format(time)}")
+            append(", id: $id")
+            append(", user clicked: ${if (clicked) "✔︎" else "✖︎"}")
+        }.toString()
     }
 }
 
