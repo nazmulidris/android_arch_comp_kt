@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         viewBinding()
         lifecycle.addObserver(DebugObserver(this, findViewById(android.R.id.content)))
+        lifecycle.addObserver(FontObserver(this, toolbar))
     }
 
     // No need to use findViewById() anymore!

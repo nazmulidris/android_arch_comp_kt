@@ -20,7 +20,14 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Context
+import android.graphics.Typeface
+import android.os.Handler
+import android.os.HandlerThread
+import android.support.v4.provider.FontRequest
+import android.support.v4.provider.FontsContractCompat
+import android.support.v7.widget.Toolbar
 import android.view.View
+import android.widget.TextView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.design.snackbar
@@ -52,5 +59,52 @@ class DebugObserver(val ctx: Context, val root: View) : LifecycleObserver, AnkoL
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun showOnStop() {
         ctx.toast("MainActivity stopped")
+    }
+}
+
+class FontObserver(val mContext: Context, val mToolbar: Toolbar) : LifecycleObserver, AnkoLogger {
+
+    // Lazy create this property, since it's heavy
+    val mFontHandler: Handler by lazy {
+        with(HandlerThread("fonts")) {
+            start()
+            Handler(looper)
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    fun downloadFont() {
+        info("${::downloadFont.name}(): Running")
+
+        //val query = "name=Open Sans&weight=800&italic=0"
+        val query = "name=Noto Sans&weight=700&italic=1"
+
+        // Start async fetch on the handler thread
+        FontsContractCompat.requestFont(
+                mContext,
+                FontRequest(
+                        "com.google.android.gms.fonts",
+                        "com.google.android.gms",
+                        query,
+                        R.array.com_google_android_gms_fonts_certs),
+                object : FontsContractCompat.FontRequestCallback() {
+                    override fun onTypefaceRetrieved(typeface: Typeface) {
+                        // If we got our font apply it to the toolbar
+                        styleToolbar(typeface)
+                    }
+
+                    override fun onTypefaceRequestFailed(reason: Int) {
+                        error("Failed to fetch Toolbar font: $reason")
+                    }
+                },
+                mFontHandler)
+    }
+
+    fun styleToolbar(typeface: Typeface) {
+        mToolbar.applyRecursively {
+            when (it) {
+                is TextView -> it.typeface = typeface
+            }
+        }
     }
 }
