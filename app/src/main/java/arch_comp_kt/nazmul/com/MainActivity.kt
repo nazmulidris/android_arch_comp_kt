@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     fun setupModelView() {
         mStateViewModel = ViewModelProviders.of(this).get(StateViewModel::class.java)
-        data_textview.text = String.format("Data: %s", mStateViewModel.mData)
+        data_textview.text = mStateViewModel.mData.toString()
     }
 
     private fun attachLiveDataObservers() {
