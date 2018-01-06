@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 alert(
                         Appcompat,
                         title = "Welcome 🤗",
-                        message = "Make sure to rotate the screen. This dialog only shows in ON_CREATE.",
+                        message = "Make sure to rotate the screen to see what happens",
                         init = {
                             okButton {
                                 mStateViewModel.mData.clicked = true
