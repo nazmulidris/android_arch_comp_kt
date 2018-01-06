@@ -16,18 +16,42 @@
 
 package arch_comp_kt.nazmul.com
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.*
+import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.jetbrains.anko.design.snackbar
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AnkoLogger {
+
+    lateinit var mStateViewModel: StateViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Kotlin goodness with view binding
         viewBinding()
-        lifecycle.addObserver(DebugObserver(this, findViewById(android.R.id.content)))
+
+        // set the rootView
+        val rootView: View = findViewById(android.R.id.content)
+
+        // Lifecycle awareness
+        lifecycle.addObserver(DebugObserver(this, rootView))
         lifecycle.addObserver(FontObserver(this, toolbar))
+
+        // ModelView
+        setupModelView()
+
+        // LiveData
+        attachLiveDataObservers()
+
+        // show dialog on first run
+        showDialog(rootView = rootView)
     }
 
     // No need to use findViewById() anymore!
@@ -36,5 +60,46 @@ class MainActivity : AppCompatActivity() {
         data_textview.text = "Data!!!"
         counter_textview.text = "Counter!!!"
     }
+
+    fun setupModelView() {
+        mStateViewModel = ViewModelProviders.of(this).get(StateViewModel::class.java)
+        data_textview.text = String.format("Data: %s", mStateViewModel.mData)
+    }
+
+    private fun attachLiveDataObservers() {
+        mStateViewModel.mCounter.observe(
+                this,
+                Observer {
+                    counter_textview.text = "Count: ${it.toString()}"
+                })
+        mStateViewModel.mData.observe(
+                this,
+                Observer {
+                    data_textview.text = it.toString()
+                }
+        )
+    }
+
+    fun showDialog(rootView: View) {
+        if (::mStateViewModel.isInitialized)
+            if (!mStateViewModel.mData.clicked)
+                alert(
+                        Appcompat,
+                        title = "Welcome 🤗",
+                        message = "Make sure to rotate the screen. This dialog only shows in ON_CREATE.",
+                        init = {
+                            okButton {
+                                mStateViewModel.mData.clicked = true
+                                snackbar(rootView, "👍")
+                            }
+                            noButton {
+                                mStateViewModel.mData.clicked = true
+                                snackbar(rootView, "👎")
+                                wtf("👎 was selected")
+                            }
+                        }
+                ).show()
+    }
+
 }
 

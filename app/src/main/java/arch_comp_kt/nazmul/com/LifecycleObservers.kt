@@ -29,31 +29,13 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.TextView
 import org.jetbrains.anko.*
-import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.design.snackbar
 
 class DebugObserver(val ctx: Context, val root: View) : LifecycleObserver, AnkoLogger {
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun showOnCreate() {
-
         info("ON_CREATE")
-
         snackbar(root, "MainActivity created")
-
-        ctx.alert(
-                Appcompat,
-                title = "Welcome 🤗",
-                message = "Make sure to rotate the screen. This dialog only shows in ON_CREATE.",
-                init = {
-                    okButton { snackbar(root, "👍") }
-                    noButton {
-                        snackbar(root, "👎")
-                        wtf("👎 was selected")
-                    }
-                }
-        ).show()
-
-
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
